@@ -2,7 +2,7 @@ import os
 import re
 from datetime import date
 from decimal import Decimal, InvalidOperation
-from typing import Iterable
+from collections.abc import Iterable
 
 from dotenv import load_dotenv
 from flask import Flask, Response, request
@@ -38,14 +38,14 @@ def parse_expense(message: str) -> tuple[str, Decimal]:
 
 def calculate_month_total(values: Iterable[Decimal | float | int]) -> Decimal:
     """Sum expense values using decimal arithmetic to avoid float rounding."""
-    return sum((Decimal(str(value)) for value in values), start=Decimal("0"))
+    return sum((Decimal(str(value)) for value in values), start=Decimal(0))
 
 
 def save_expense(description: str, amount: Decimal) -> Decimal:
     """Persist an expense and return the current month's total."""
     from banco import Despesa, SessionLocal
 
-    today = date.today()
+    today = date.today()  # noqa: DTZ011
     month_start = today.replace(day=1)
     next_month = date(today.year + (today.month == 12), today.month % 12 + 1, 1)
 
